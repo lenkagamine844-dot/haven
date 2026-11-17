@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Haven</title>
+<meta name="theme-color" content="#F6F6F5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#131313" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Haven">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&display=swap" rel="stylesheet">
+<style>
+/* ---------- Palettes: each sets light (-l) and dark (-d) values ---------- */
+:root{
+  --bg-l:#F6F6F5; --surface-l:#FFFFFF; --ink-l:#1C1C1C; --muted-l:#7A7A77; --line-l:#E3E3E0; --accent-l:#1C1C1C; --soft-l:#EDEDEB; --on-l:#FFFFFF;
+  --bg-d:#131313; --surface-d:#1C1C1C; --ink-d:#ECECEA; --muted-d:#8E8E8B; --line-d:#2D2D2C; --accent-d:#ECECEA; --soft-d:#262626; --on-d:#131313;
+}
+:root[data-palette="sage"]{ --bg-l:#F1F4EF; --accent-l:#5F7F63; --soft-l:#E0EADD; --line-l:#DCE3D9; --bg-d:#121512; --surface-d:#1A1F1A; --accent-d:#A9C7AB; --soft-d:#243026; --line-d:#2B352C; --on-d:#121512; }
+:root[data-palette="blush"]{ --bg-l:#FAF2F2; --accent-l:#B36A78; --soft-l:#F5E0E4; --line-l:#EEDDE0; --bg-d:#161213; --surface-d:#1F191A; --accent-d:#E8B4BE; --soft-d:#33242A; --line-d:#3A2B2F; --on-d:#161213; }
+:root[data-palette="lavender"]{ --bg-l:#F4F2F9; --accent-l:#7A6CAE; --soft-l:#E6E2F3; --line-l:#E1DDEE; --bg-d:#131219; --surface-d:#1B1A23; --accent-d:#C3B9E8; --soft-d:#29263A; --line-d:#302D42; --on-d:#131219; }
+:root[data-palette="sky"]{ --bg-l:#F0F5F9; --accent-l:#5F88AA; --soft-l:#DDE9F3; --line-l:#DAE4EC; --bg-d:#111518; --surface-d:#181E23; --accent-d:#AFCDE6; --soft-d:#22303B; --line-d:#2A3743; --on-d:#111518; }
+:root[data-palette="butter"]{ --bg-l:#F9F6EA; --accent-l:#9C8236; --soft-l:#F1E9CC; --line-l:#EAE3C9; --bg-d:#161510; --surface-d:#1F1D16; --accent-d:#E6D395; --soft-d:#332F1F; --line-d:#3A3624; --on-d:#161510; }
+
+:root{
+  --bg:var(--bg-l); --surface:var(--surface-l); --ink:var(--ink-l); --muted:var(--muted-l); --line:var(--line-l);
+  --accent:var(--accent-l); --soft:var(--soft-l); --on-accent:var(--on-l);
+  --shadow:0 10px 30px rgba(20,20,20,.08);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:var(--bg-d); --surface:var(--surface-d); --ink:var(--ink-d); --muted:var(--muted-d); --line:var(--line-d);
+    --accent:var(--accent-d); --soft:var(--soft-d); --on-accent:var(--on-d); --shadow:0 10px 30px rgba(0,0,0,.4);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:var(--bg-d); --surface:var(--surface-d); --ink:var(--ink-d); --muted:var(--muted-d); --line:var(--line-d);
+  --accent:var(--accent-d); --soft:var(--soft-d); --on-accent:var(--on-d); --shadow:0 10px 30px rgba(0,0,0,.4);
+  color-scheme:dark;
+}
+
+/* ---------- Base ---------- */
+:root{ box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+*,*::before,*::after{ box-sizing:inherit; }
+html{ scroll-padding-top:env(safe-area-inset-top,0px); }
+html,body{ margin:0; background:var(--bg); color:var(--ink); }
+body{
+  font-family:"Newsreader", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  font-size:17px; line-height:1.5; font-optical-sizing:auto;
+  -webkit-font-smoothing:antialiased; min-height:100vh;
+}
+body::before{ content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:30; background:var(--bg); }
+button,input,select{ font:inherit; color:inherit; }
+button{ cursor:pointer; background:none; border:0; padding:0; }
+:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
+.app{ max-width:520px; margin:0 auto; padding:20px 20px 150px; }
+.hidden{ display:none !important; }
+.muted{ color:var(--muted); }
+
+/* ---------- Header ---------- */
+.top{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin:8px 0 18px; }
+.date-line{ font-size:15px; color:var(--muted); margin:0; }
+h1.brand{ font-size:34px; text-wrap:balance; line-height:1.05; font-weight:400; letter-spacing:-.01em; margin:2px 0 0; }
+h1.brand em{ font-style:italic; font-weight:300; }
+.pill-btn{
+  display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+  border:1px solid var(--line); background:var(--surface); border-radius:999px;
+  padding:7px 14px; font-size:15px; margin-top:6px;
+}
+.pill-btn:hover{ border-color:var(--muted); }
+
+/* ---------- Affirmation card ---------- */
+.affirm{
+  position:relative; background:var(--soft); border-radius:22px; padding:22px 22px 18px; margin-bottom:22px;
+}
+.affirm q{ display:block; quotes:none; font-style:italic; font-size:22px; line-height:1.35; font-weight:350; }
+.affirm .by{ display:block; margin-top:10px; font-size:14px; color:var(--muted); }
+.affirm .shuffle{ position:absolute; right:12px; bottom:10px; width:34px; height:34px; border-radius:50%; display:grid; place-items:center; color:var(--muted); }
+.affirm .shuffle:hover{ color:var(--ink); }
+.affirm.empty{ font-size:16px; color:var(--muted); }
+.affirm.empty button{ text-decoration:underline; text-underline-offset:3px; color:var(--ink); }
+
+/* ---------- Progress ---------- */
+.progress{ display:flex; align-items:center; gap:16px; margin:0 0 26px; }
+.ring{ width:64px; height:64px; flex:none; }
+.ring circle{ fill:none; stroke-width:5; }
+.ring .track{ stroke:var(--line); }
+.ring .fill{ stroke:var(--accent); stroke-linecap:round; transition:stroke-dashoffset .5s ease; transform:rotate(-90deg); transform-origin:50% 50%; }
+.ring text{ fill:var(--ink); font-size:15px; font-family:inherit; }
+.progress h2{ margin:0; font-size:21px; font-weight:450; }
+.progress p{ margin:0; color:var(--muted); font-size:15px; }
+
+/* ---------- Groups & items ---------- */
+.group{ margin-bottom:22px; }
+.group-head{ display:flex; align-items:center; gap:8px; padding:4px 2px 8px; border-bottom:1px solid var(--line); }
+.group-head .toggle{ display:flex; align-items:center; gap:8px; flex:1; text-align:left; }
+.group-head h3{ margin:0; font-size:19px; font-weight:500; font-style:italic; }
+.group-head .count{ font-size:14px; color:var(--muted); }
+.chev{ transition:transform .2s; color:var(--muted); }
+.group.collapsed .chev{ transform:rotate(-90deg); }
+.group.collapsed .items{ display:none; }
+.icon-btn{ width:34px; height:34px; display:grid; place-items:center; border-radius:50%; color:var(--muted); flex:none; }
+.icon-btn:hover{ color:var(--ink); background:var(--soft); }
+
+.item{ border-bottom:1px solid var(--line); }
+.item-row{ display:flex; align-items:center; gap:12px; padding:12px 2px; }
+.check{
+  width:26px; height:26px; border-radius:50%; border:1.5px solid var(--muted); flex:none;
+  display:grid; place-items:center; transition:background .2s, border-color .2s;
+}
+.check svg{ opacity:0; transition:opacity .2s; }
+.check.on{ background:var(--accent); border-color:var(--accent); color:var(--on-accent); }
+.check.on svg{ opacity:1; }
+.mini-ring{ width:26px; height:26px; flex:none; }
+.mini-ring circle{ fill:none; stroke-width:2.5; }
+.mini-ring .track{ stroke:var(--muted); opacity:.45; }
+.mini-ring .fill{ stroke:var(--accent); stroke-linecap:round; transform:rotate(-90deg); transform-origin:50% 50%; transition:stroke-dashoffset .35s; }
+.mini-ring.full .track{ opacity:0; }
+.mini-ring .done-bg{ fill:var(--accent); }
+.item-main{ flex:1; min-width:0; text-align:left; }
+.item-title{ display:block; font-size:18px; line-height:1.3; }
+.item.complete .item-title{ color:var(--muted); text-decoration:line-through; text-decoration-thickness:1px; }
+.item-meta{ display:block; font-size:14px; color:var(--muted); }
+.steps{ list-style:none; margin:0 0 10px; padding:0 0 0 38px; display:none; }
+.item.open .steps{ display:block; }
+.steps li{ display:flex; align-items:center; gap:10px; padding:6px 0; }
+.steps .check{ width:20px; height:20px; }
+.steps li.done span{ color:var(--muted); text-decoration:line-through; text-decoration-thickness:1px; }
+
+.empty-state{ text-align:center; padding:36px 16px; color:var(--muted); }
+.empty-state p{ margin:0 0 14px; font-size:18px; font-style:italic; }
+
+/* ---------- FAB & Nav ---------- */
+.fab{
+  position:fixed; right:max(20px, calc(50% - 240px)); bottom:calc(84px + env(safe-area-inset-bottom,0px));
+  width:58px; height:58px; border-radius:50%; background:var(--accent); color:var(--on-accent);
+  display:grid; place-items:center; box-shadow:var(--shadow); z-index:20; transition:transform .15s;
+}
+.fab:active{ transform:scale(.94); }
+nav.tabs{
+  position:fixed; left:0; right:0; bottom:0; z-index:25;
+  background:var(--surface); border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+nav.tabs .inner{ max-width:520px; margin:0 auto; display:grid; grid-template-columns:repeat(4,1fr); }
+nav.tabs button{ display:flex; flex-direction:column; align-items:center; gap:2px; padding:10px 0 9px; font-size:13px; color:var(--muted); }
+nav.tabs button[aria-current="page"]{ color:var(--ink); }
+nav.tabs button[aria-current="page"] span{ font-style:italic; }
+
+/* ---------- Calendar ---------- */
+.cal-head{ display:flex; align-items:center; justify-content:space-between; margin:8px 0 14px; }
+.cal-head h1{ margin:0; font-size:32px; font-weight:400; }
+.cal-head h1 em{ font-weight:300; color:var(--muted); }
+.cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:4px; text-align:center; }
+.cal-grid .wd{ font-size:13px; color:var(--muted); padding-bottom:6px; }
+.day{
+  aspect-ratio:1; border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  font-size:16px; position:relative;
+}
+.day.out{ color:var(--muted); opacity:.45; }
+.day.today{ font-weight:600; }
+.day.today::after{ content:""; position:absolute; inset:3px; border:1px solid var(--line); border-radius:12px; }
+.day.sel{ background:var(--accent); color:var(--on-accent); }
+.day.sel.today::after{ display:none; }
+.dot{ width:5px; height:5px; border-radius:50%; background:var(--muted); opacity:.6; }
+.dot.full{ background:var(--accent); opacity:1; }
+.day.sel .dot{ background:var(--on-accent); opacity:.9; }
+.day-panel{ margin-top:22px; }
+.day-panel-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:6px; }
+.day-panel-head h2{ margin:0; font-size:22px; font-weight:450; }
+
+/* ---------- Affirmations / Settings ---------- */
+.page-title{ font-size:36px; font-weight:400; margin:8px 0 18px; }
+.section{ margin-bottom:30px; }
+.section h2{ font-size:19px; font-weight:500; font-style:italic; margin:0 0 4px; }
+.section > p.hint{ margin:0 0 12px; color:var(--muted); font-size:15px; }
+.list{ list-style:none; margin:0; padding:0; border-top:1px solid var(--line); }
+.list li{ display:flex; align-items:center; gap:10px; padding:12px 2px; border-bottom:1px solid var(--line); }
+.list li span{ flex:1; font-style:italic; }
+.aff-by{ display:block; font-style:normal; font-size:14px; color:var(--muted); }
+.add-row{ display:flex; gap:8px; margin-top:12px; }
+.field{
+  width:100%; border:1px solid var(--line); background:var(--surface); border-radius:14px; padding:11px 14px; font-size:17px;
+}
+.field:focus{ outline:none; border-color:var(--accent); }
+.btn{ border-radius:14px; padding:11px 18px; background:var(--accent); color:var(--on-accent); font-size:16px; white-space:nowrap; }
+.btn.ghost{ background:transparent; color:var(--ink); border:1px solid var(--line); }
+.btn.danger{ background:transparent; color:#B4483F; border:1px solid var(--line); }
+
+.switch-row{ display:flex; align-items:center; justify-content:space-between; gap:16px; padding:13px 2px; border-bottom:1px solid var(--line); }
+.switch-row:first-of-type{ border-top:1px solid var(--line); }
+.switch-row small{ display:block; color:var(--muted); font-size:14px; }
+.switch{ width:46px; height:28px; border-radius:999px; background:var(--line); position:relative; flex:none; transition:background .2s; }
+.switch::after{ content:""; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:var(--surface); box-shadow:0 1px 3px rgba(0,0,0,.2); transition:transform .2s; }
+.switch[aria-checked="true"]{ background:var(--accent); }
+.switch[aria-checked="true"]::after{ transform:translateX(18px); }
+
+.swatches{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.swatch{ border:1px solid var(--line); border-radius:16px; padding:10px; text-align:left; background:var(--surface); font-size:15px; }
+.swatch[aria-pressed="true"]{ border-color:var(--ink); box-shadow:inset 0 0 0 1px var(--ink); }
+.swatch .chips{ display:flex; gap:4px; margin-bottom:8px; }
+.swatch .chips i{ width:20px; height:20px; border-radius:50%; border:1px solid rgba(0,0,0,.08); }
+.seg{ display:grid; grid-template-columns:repeat(3,1fr); border:1px solid var(--line); border-radius:14px; overflow:hidden; }
+.seg button{ padding:10px 0; font-size:15px; }
+.seg button[aria-pressed="true"]{ background:var(--accent); color:var(--on-accent); }
+
+/* ---------- Sheet ---------- */
+.scrim{ position:fixed; inset:0; background:rgba(10,10,10,.35); z-index:40; display:flex; align-items:flex-end; justify-content:center; }
+.sheet{
+  width:100%; max-width:520px; max-height:92vh; overflow:auto; background:var(--surface); border-radius:24px 24px 0 0;
+  padding:18px 20px calc(24px + env(safe-area-inset-bottom,0px)); animation:up .25s ease;
+}
+@keyframes up{ from{ transform:translateY(30px); opacity:0; } }
+.sheet-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.sheet-head h2{ margin:0; font-size:24px; font-weight:400; }
+.flabel{ display:block; font-size:15px; color:var(--muted); margin:16px 0 6px; }
+.step-edit{ display:flex; gap:6px; margin-bottom:6px; }
+.chips-row{ display:flex; flex-wrap:wrap; gap:6px; }
+.chip{ border:1px solid var(--line); border-radius:999px; padding:6px 13px; font-size:15px; }
+.chip[aria-pressed="true"]{ background:var(--accent); color:var(--on-accent); border-color:var(--accent); }
+.two{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.sheet-actions{ display:flex; gap:10px; margin-top:24px; }
+.sheet-actions .btn{ flex:1; }
+.form-note{ font-size:14px; color:var(--muted); margin:6px 0 0; }
+.form-error{ font-size:14px; color:#B4483F; margin:6px 0 0; }
+
+/* ---------- Reminder banners ---------- */
+.banners{ position:fixed; top:calc(10px + env(safe-area-inset-top,0px)); left:0; right:0; z-index:35; display:flex; flex-direction:column; align-items:center; gap:8px; padding:0 14px; pointer-events:none; }
+.banner{
+  pointer-events:auto; width:100%; max-width:490px; background:var(--surface); border:1px solid var(--line); border-radius:18px;
+  box-shadow:var(--shadow); padding:12px 12px 12px 16px; display:flex; align-items:center; gap:10px; animation:drop .3s ease;
+}
+@keyframes drop{ from{ transform:translateY(-16px); opacity:0; } }
+.banner p{ margin:0; flex:1; font-size:15px; line-height:1.4; }
+.banner b{ font-weight:550; }
+
+/* ---------- Splash ---------- */
+.splash{
+  position:fixed; inset:0; z-index:60; background:var(--bg); display:flex; flex-direction:column; justify-content:center;
+  padding:40px 32px calc(40px + env(safe-area-inset-bottom,0px)); transition:opacity .7s ease, visibility .7s;
+}
+.splash.gone{ opacity:0; visibility:hidden; }
+.splash .inner{ max-width:520px; margin:0 auto; width:100%; }
+.splash .hello{ font-size:16px; color:var(--muted); margin:0 0 26px; opacity:0; animation:fade 1s .2s forwards; }
+.splash blockquote{ margin:0; font-size:clamp(32px, 8.5vw, 46px); line-height:1.15; font-style:italic; font-weight:300; letter-spacing:-.01em; opacity:0; animation:rise 1.2s .5s forwards; }
+.splash cite{ display:block; margin-top:22px; font-style:normal; color:var(--muted); font-size:16px; opacity:0; animation:fade 1s 1.3s forwards; }
+.splash .go{ margin-top:48px; opacity:0; animation:fade 1s 1.8s forwards; }
+@keyframes fade{ to{ opacity:1; } }
+@keyframes rise{ from{ transform:translateY(14px); } to{ opacity:1; transform:none; } }
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{ animation-duration:.01ms !important; animation-delay:0s !important; transition-duration:.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="splash hidden" id="splash" role="dialog" aria-label="Today’s affirmation">
+  <div class="inner">
+    <p class="hello" id="splashHello"></p>
+    <blockquote id="splashText"></blockquote>
+    <cite id="splashBy"></cite>
+    <button class="btn ghost go" id="splashGo">Begin my day</button>
+  </div>
+</div>
+
+<div class="banners" id="banners" aria-live="polite"></div>
+
+<main class="app" id="app"></main>
+
+<button class="fab" id="fab" aria-label="New checklist">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+</button>
+
+<nav class="tabs" aria-label="Sections">
+  <div class="inner">
+    <button data-tab="today"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 11.5 12 5l8 6.5V20H4z"/><path d="M10 20v-5h4v5"/></svg><span>Today</span></button>
+    <button data-tab="calendar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="5.5" width="16" height="14.5" rx="2.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/></svg><span>Calendar</span></button>
+    <button data-tab="affirm"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><span>Affirmations</span></button>
+    <button data-tab="settings"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/></svg><span>Settings</span></button>
+  </div>
+</nav>
+
+<div id="sheetHost"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ================= Built-in inspiration library ================= */
+const QUOTES = [
+  ["Almost everything will work again if you unplug it for a few minutes, including you.","Anne Lamott"],
+  ["Nothing is so strong as gentleness, nothing so gentle as real strength.","Francis de Sales"],
+  ["Adopt the pace of nature: her secret is patience.","Ralph Waldo Emerson"],
+  ["Very little is needed to make a happy life.","Marcus Aurelius"],
+  ["Nature does not hurry, yet everything is accomplished.","Lao Tzu"],
+  ["Act as if what you do makes a difference. It does.","William James"],
+  ["To love oneself is the beginning of a lifelong romance.","Oscar Wilde"],
+  ["Small deeds done are better than great deeds planned.","Peter Marshall"],
+  ["Caring for myself is not self-indulgence, it is self-preservation.","Audre Lorde"],
+  ["Well begun is half done.","Aristotle"],
+  ["Start where you are. Use what you have. Do what you can.","Arthur Ashe"],
+  ["You are allowed to be both a masterpiece and a work in progress.","Sophia Bush"],
+  ["Happiness is not something ready made. It comes from your own actions.","Dalai Lama"],
+  ["It does not matter how slowly you go as long as you do not stop.","Confucius"],
+  ["The best way out is always through.","Robert Frost"],
+  ["Dwell on the beauty of life.","Marcus Aurelius"],
+  ["Wherever you go, there you are.","Jon Kabat-Zinn"],
+  ["Self-care is how you take your power back.","Lalah Delia"],
+  ["Little by little, one travels far.","Proverb"],
+  ["What you do today can improve all your tomorrows.","Ralph Marston"],
+  ["Rest is not idleness.","John Lubbock"],
+  ["Be gentle with yourself. You’re doing the best you can.","Unknown"],
+  ["One day at a time.","Unknown"],
+  ["Breathe. You’re going to be okay.","Unknown"],
+  ["The present moment is the only moment available to us.","Thich Nhat Hanh"],
+  ["Keep going. Everything you need will come to you at the perfect time.","Unknown"],
+  ["You have been assigned this mountain to show others it can be moved.","Mel Robbins"],
+  ["Bloom where you are planted.","Proverb"]
+];
+
+/* ================= Helpers ================= */
+const $ = (s, r=document) => r.querySelector(s);
+const uid = () => Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-3);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad = n => String(n).padStart(2,"0");
+const keyOf = d => d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const parseKey = k => { const [y,m,d] = k.split("-").map(Number); return new Date(y, m-1, d); };
+const todayKey = () => keyOf(new Date());
+const WD = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const WD1 = ["S","M","T","W","T","F","S"];
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const longDate = d => d.toLocaleDateString(undefined, { weekday:"long", month:"long", day:"numeric" });
+const toMin = t => { if(!t) return null; const [h,m] = t.split(":").map(Number); return h*60+m; };
+const fmtTime = t => { if(!t) return ""; const [h,m] = t.split(":").map(Number); const ap = h<12 ? "am" : "pm"; const hh = h%12 || 12; return hh + (m ? ":"+pad(m) : "") + " " + ap; };
+const fmtMins = m => m >= 1440 ? (m/1440)+" day"+(m>1440?"s":"") : m >= 60 ? (m/60)+" hour"+(m>60?"s":"") : m+" min";
+const hash = s => { let h = 2166136261; for (const c of s){ h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return Math.abs(h); };
+
+const ICON = {
+  check:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  dots:'<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>',
+  chev:'<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>',
+  close:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  shuffle:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3c5 0 5 10 10 10h3M17 14l3 3-3 3M4 17h3c1.6 0 2.7-1 3.5-2.3M13.5 9.3C14.3 8 15.4 7 17 7h3M17 4l3 3-3 3"/></svg>',
+  trash:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/></svg>',
+  left:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>',
+  right:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>'
+};
+
+/* ================= State ================= */
+function defaultState(){
+  const t = todayKey();
+  const gSkin = uid(), gHome = uid();
+  return {
+    v:1, updatedAt:0,
+    groups:[ {id:gSkin, name:"Skincare", collapsed:false}, {id:gHome, name:"Home & me", collapsed:false} ],
+    items:[
+      { id:uid(), title:"Morning skincare", groupId:gSkin, steps:["Cleanser","Vitamin C serum","Moisturizer","Sunscreen"].map(s=>({id:uid(),text:s})),
+        repeat:{type:"daily", start:t}, time:"07:30", until:"10:00", reminder:{type:"closing", mins:60} },
+      { id:uid(), title:"Night skincare", groupId:gSkin, steps:["Double cleanse","Toner","Night cream"].map(s=>({id:uid(),text:s})),
+        repeat:{type:"daily", start:t}, time:"21:30", until:"", reminder:{type:"at", mins:0} },
+      { id:uid(), title:"Drink 8 glasses of water", groupId:gHome, steps:[], repeat:{type:"daily", start:t}, time:"", until:"", reminder:{type:"off", mins:30} },
+      { id:uid(), title:"Stretch for 10 minutes", groupId:gHome, steps:[], repeat:{type:"days", days:[1,3,5], start:t}, time:"18:00", until:"", reminder:{type:"before", mins:10} }
+    ],
+    done:{},
+    affirmations:[],
+    dismissed:{},
+    settings:{ palette:"mono", appearance:"auto", quotes:true, mine:true, splash:true, name:"", askedName:false }
+  };
+}
+
+const LS_KEY = "haven-state-v1";
+let state;
+try { state = JSON.parse(localStorage.getItem(LS_KEY)) || null; } catch(e){ state = null; }
+if (!state || !state.items) state = defaultState();
+function normalize(st){
+  st.settings = Object.assign({ palette:"mono", appearance:"auto", quotes:true, mine:true, splash:true, name:"", askedName:false }, st.settings || {});
+  st.affirmations = st.affirmations || []; st.groups = st.groups || []; st.done = st.done || {}; st.dismissed = st.dismissed || {};
+  return st;
+}
+normalize(state);
+
+function save(){
+  state.updatedAt = Date.now();
+  // keep about a year of checkmarks so the synced record stays small
+  const cutoff = keyOf(new Date(Date.now() - 400*86400000));
+  Object.keys(state.done).forEach(k => { if (k < cutoff) delete state.done[k]; });
+  try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e){}
+  if (window.HavenSync) window.HavenSync.push(state);
+}
+// Used by firebase-sync.js
+window.HavenBridge = {
+  getState: () => state,
+  applyRemote(next){
+    state = normalize(next);
+    try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e){}
+    applyTheme(); render();
+  },
+  refresh(){ if (tab === "settings") render(); }
+};
+
+/* ================= Domain ================= */
+function occursOn(item, key){
+  const r = item.repeat || {type:"once"};
+  if (r.type === "once") return r.date === key;
+  if (r.start && key < r.start) return false;
+  if (r.type === "daily") return true;
+  if (r.type === "days") return (r.days||[]).includes(parseKey(key).getDay());
+  return false;
+}
+function itemsOn(key){
+  return state.items.filter(i => occursOn(i, key)).sort((a,b) => (toMin(a.time) ?? 9999) - (toMin(b.time) ?? 9999) || a.title.localeCompare(b.title));
+}
+function doneFor(key, item){
+  const d = state.done[key] && state.done[key][item.id];
+  if (!item.steps.length) return d === true ? 1 : 0;
+  const arr = Array.isArray(d) ? d.filter(id => item.steps.some(s => s.id === id)) : [];
+  return arr.length / item.steps.length;
+}
+function isComplete(key, item){ return doneFor(key, item) >= 1; }
+function dayProgress(key){
+  const list = itemsOn(key);
+  if (!list.length) return {total:0, complete:0, frac:0};
+  const sum = list.reduce((a,i) => a + doneFor(key,i), 0);
+  return { total:list.length, complete:list.filter(i => isComplete(key,i)).length, frac:sum/list.length };
+}
+function toggleItem(key, item){
+  state.done[key] = state.done[key] || {};
+  if (!item.steps.length){
+    if (state.done[key][item.id] === true) delete state.done[key][item.id]; else state.done[key][item.id] = true;
+  } else {
+    state.done[key][item.id] = isComplete(key, item) ? [] : item.steps.map(s => s.id);
+  }
+  save(); render();
+}
+function toggleStep(key, item, stepId){
+  state.done[key] = state.done[key] || {};
+  let arr = Array.isArray(state.done[key][item.id]) ? state.done[key][item.id].slice() : [];
+  arr = arr.includes(stepId) ? arr.filter(x => x !== stepId) : arr.concat(stepId);
+  state.done[key][item.id] = arr;
+  save(); render();
+}
+function describeRepeat(item){
+  const r = item.repeat;
+  if (r.type === "daily") return "Every day";
+  if (r.type === "days"){
+    const d = (r.days||[]).slice().sort();
+    if (d.join() === "1,2,3,4,5") return "Weekdays";
+    if (d.join() === "0,6") return "Weekends";
+    return d.map(x => WD[x]).join(", ");
+  }
+  return parseKey(r.date).toLocaleDateString(undefined, {month:"short", day:"numeric"});
+}
+function metaLine(item, key){
+  const bits = [];
+  if (item.time) bits.push(item.until ? fmtTime(item.time) + "–" + fmtTime(item.until) : fmtTime(item.time));
+  else if (item.until) bits.push("until " + fmtTime(item.until));
+  if (item.repeat.type !== "once") bits.push(describeRepeat(item));
+  if (item.steps.length){
+    const n = Math.round(doneFor(key, item) * item.steps.length);
+    bits.push(n + "/" + item.steps.length + " steps");
+  }
+  if (item.reminder && item.reminder.type !== "off") bits.push("🔔");
+  return bits.join(" · ");
+}
+
+/* ================= Affirmations ================= */
+let affirmOffset = 0;
+function authorOf(a){ return (a.by || "").trim() || state.settings.name.trim() || "Your words"; }
+function greetWord(){ const h = new Date().getHours(); return h >= 5 && h < 12 ? "Good morning" : h >= 12 && h < 18 ? "Hello" : "Good evening"; }
+function greeting(){ const n = state.settings.name.trim(); return greetWord() + (n ? ", " + n : ""); }
+function affirmPool(){
+  const pool = [];
+  if (state.settings.mine) state.affirmations.forEach(a => pool.push([a.text, authorOf(a)]));
+  if (state.settings.quotes) QUOTES.forEach(q => pool.push(q));
+  return pool;
+}
+function affirmationFor(key, offset=0){
+  const pool = affirmPool();
+  if (!pool.length) return null;
+  // Her own affirmations come up more often when both sources are on
+  if (state.settings.mine && state.settings.quotes && state.affirmations.length && offset === 0 && hash(key+"m") % 2 === 0){
+    const a = state.affirmations[hash(key) % state.affirmations.length];
+    return [a.text, authorOf(a)];
+  }
+  return pool[(hash(key) + offset) % pool.length];
+}
+
+/* ================= Theme ================= */
+const PALETTES = [
+  {id:"mono", name:"Mono", chips:["#1C1C1C","#9A9A97","#EDEDEB"]},
+  {id:"sage", name:"Sage", chips:["#5F7F63","#A9C7AB","#E0EADD"]},
+  {id:"blush", name:"Blush", chips:["#B36A78","#E8B4BE","#F5E0E4"]},
+  {id:"lavender", name:"Lavender", chips:["#7A6CAE","#C3B9E8","#E6E2F3"]},
+  {id:"sky", name:"Sky", chips:["#5F88AA","#AFCDE6","#DDE9F3"]},
+  {id:"butter", name:"Butter", chips:["#9C8236","#E6D395","#F1E9CC"]}
+];
+function applyTheme(){
+  const r = document.documentElement;
+  r.setAttribute("data-palette", state.settings.palette);
+  if (state.settings.appearance === "auto") r.removeAttribute("data-theme");
+  else r.setAttribute("data-theme", state.settings.appearance);
+}
+
+/* ================= Routing / UI state ================= */
+let tab = "today";
+let calMonth = new Date(); calMonth.setDate(1);
+let selKey = todayKey();
+const openItems = new Set();
+
+function setTab(t){
+  tab = t;
+  document.querySelectorAll("nav.tabs button").forEach(b => b.setAttribute("aria-current", b.dataset.tab === t ? "page" : "false"));
+  $("#fab").classList.toggle("hidden", !(t === "today" || t === "calendar"));
+  window.scrollTo(0,0);
+  render();
+}
+
+/* ================= Renderers ================= */
+function ringSvg(frac, size, cls, label){
+  const r = size === 64 ? 27 : 10.5, c = 2*Math.PI*r, mid = size/2;
+  return `<svg class="${cls}${frac>=1 && cls==='mini-ring' ? ' full' : ''}" viewBox="0 0 ${size} ${size}" aria-hidden="true">
+    ${cls==='mini-ring' && frac>=1 ? `<circle class="done-bg" cx="${mid}" cy="${mid}" r="${r+1.2}"/>` : ''}
+    <circle class="track" cx="${mid}" cy="${mid}" r="${r}"/>
+    <circle class="fill" cx="${mid}" cy="${mid}" r="${r}" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-Math.min(frac,1))}"/>
+    ${label ? `<text x="50%" y="50%" text-anchor="middle" dominant-baseline="central">${label}</text>` : ''}
+    ${cls==='mini-ring' && frac>=1 ? `<path d="M8 13.5l3.2 3.2L18.5 9.5" fill="none" stroke="var(--on-accent)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>` : ''}
+  </svg>`;
+}
+
+function itemHtml(item, key){
+  const complete = isComplete(key, item);
+  const open = openItems.has(item.id);
+  const frac = doneFor(key, item);
+  const control = item.steps.length
+    ? `<button class="ringbtn" data-act="toggle" data-id="${item.id}" aria-label="${complete ? 'Clear' : 'Complete'} all steps of ${esc(item.title)}">${ringSvg(frac, 26, "mini-ring")}</button>`
+    : `<button class="check ${complete ? 'on' : ''}" data-act="toggle" data-id="${item.id}" role="checkbox" aria-checked="${complete}" aria-label="${esc(item.title)}">${ICON.check}</button>`;
+  const steps = item.steps.length ? `<ul class="steps">${item.steps.map(s => {
+      const d = Array.isArray(state.done[key]?.[item.id]) && state.done[key][item.id].includes(s.id);
+      return `<li class="${d ? 'done' : ''}"><button class="check ${d ? 'on' : ''}" data-act="step" data-id="${item.id}" data-step="${s.id}" role="checkbox" aria-checked="${d}" aria-label="${esc(s.text)}">${ICON.check}</button><span>${esc(s.text)}</span></li>`;
+    }).join("")}</ul>` : "";
+  return `<div class="item ${complete ? 'complete' : ''} ${open ? 'open' : ''}">
+    <div class="item-row">
+      ${control}
+      <button class="item-main" data-act="${item.steps.length ? 'expand' : 'toggle'}" data-id="${item.id}" ${item.steps.length ? `aria-expanded="${open}"` : ''}>
+        <span class="item-title">${esc(item.title)}</span>
+        <span class="item-meta">${esc(metaLine(item, key))}</span>
+      </button>
+      <button class="icon-btn" data-act="edit" data-id="${item.id}" aria-label="Edit ${esc(item.title)}">${ICON.dots}</button>
+    </div>
+    ${steps}
+  </div>`;
+}
+
+function listHtml(key){
+  const list = itemsOn(key);
+  if (!list.length){
+    return `<div class="empty-state"><p>Nothing planned for this day.</p><button class="btn" data-act="new" data-date="${key}">Add a checklist</button></div>`;
+  }
+  const blocks = [];
+  state.groups.forEach(g => {
+    const its = list.filter(i => i.groupId === g.id);
+    if (!its.length) return;
+    const done = its.filter(i => isComplete(key,i)).length;
+    blocks.push(`<section class="group ${g.collapsed ? 'collapsed' : ''}">
+      <div class="group-head">
+        <button class="toggle" data-act="collapse" data-gid="${g.id}" aria-expanded="${!g.collapsed}">${ICON.chev}<h3>${esc(g.name)}</h3><span class="count">${done}/${its.length}</span></button>
+        <button class="icon-btn" data-act="editgroup" data-gid="${g.id}" aria-label="Edit group ${esc(g.name)}">${ICON.dots}</button>
+      </div>
+      <div class="items">${its.map(i => itemHtml(i, key)).join("")}</div>
+    </section>`);
+  });
+  const loose = list.filter(i => !state.groups.some(g => g.id === i.groupId));
+  if (loose.length){
+    const done = loose.filter(i => isComplete(key,i)).length;
+    blocks.push(`<section class="group"><div class="group-head"><div class="toggle"><h3>Everything else</h3><span class="count">${done}/${loose.length}</span></div></div>
+      <div class="items">${loose.map(i => itemHtml(i, key)).join("")}</div></section>`);
+  }
+  return blocks.join("");
+}
+
+function affirmCardHtml(){
+  const a = affirmationFor(todayKey(), affirmOffset);
+  if (!a){
+    if (!state.settings.quotes && !state.settings.mine) return "";
+    return `<div class="affirm empty">You haven’t written any affirmations yet. <button data-act="goaffirm">Write your first one</button>.</div>`;
+  }
+  return `<div class="affirm"><q>${esc(a[0])}</q><span class="by">${esc(a[1] || "Your words")}</span>
+    <button class="shuffle" data-act="shuffle" aria-label="Show another affirmation">${ICON.shuffle}</button></div>`;
+}
+
+function renderToday(){
+  const key = todayKey();
+  const p = dayProgress(key);
+  const pct = p.total ? Math.round(p.frac*100) : 0;
+  const msg = !p.total ? "A free day." : p.complete === p.total ? "All done. Be proud of today." : p.complete === 0 ? "Let’s begin, gently." : "You’re on your way.";
+  return `
+    <header class="top">
+      <div><p class="date-line">${esc(longDate(new Date()))}</p><h1 class="brand">${esc(greeting())}</h1></div>
+      <button class="pill-btn" data-act="newgroup">+ New group</button>
+    </header>
+    ${affirmCardHtml()}
+    ${p.total ? `<div class="progress">${ringSvg(p.frac, 64, "ring", pct+"%")}<div><h2>${p.complete} of ${p.total} done</h2><p>${msg}</p></div></div>` : ""}
+    ${listHtml(key)}`;
+}
+
+function renderCalendar(){
+  const y = calMonth.getFullYear(), m = calMonth.getMonth();
+  const first = new Date(y, m, 1);
+  const start = new Date(y, m, 1 - first.getDay());
+  const tk = todayKey();
+  let cells = WD1.map(d => `<div class="wd" aria-hidden="true">${d}</div>`).join("");
+  for (let i = 0; i < 42; i++){
+    const d = new Date(start); d.setDate(start.getDate() + i);
+    if (i >= 35 && d.getMonth() !== m) break;
+    const k = keyOf(d);
+    const p = dayProgress(k);
+    const dot = p.total ? `<span class="dot ${p.complete === p.total ? 'full' : ''}"></span>` : `<span style="height:5px"></span>`;
+    cells += `<button class="day ${d.getMonth()!==m ? 'out' : ''} ${k===tk ? 'today' : ''} ${k===selKey ? 'sel' : ''}" data-act="pick" data-date="${k}" aria-label="${esc(longDate(d))}${p.total ? ', '+p.complete+' of '+p.total+' done' : ''}" aria-pressed="${k===selKey}">${d.getDate()}${dot}</button>`;
+  }
+  const sd = parseKey(selKey);
+  const sp = dayProgress(selKey);
+  return `
+    <div class="cal-head">
+      <h1>${MONTHS[m]} <em>${y}</em></h1>
+      <div><button class="icon-btn" data-act="prevm" aria-label="Previous month">${ICON.left}</button><button class="icon-btn" data-act="nextm" aria-label="Next month">${ICON.right}</button></div>
+    </div>
+    <div class="cal-grid">${cells}</div>
+    <div class="day-panel">
+      <div class="day-panel-head"><h2>${esc(longDate(sd))}</h2><span class="muted" style="font-size:15px">${sp.total ? sp.complete+' of '+sp.total+' done' : ''}</span></div>
+      ${listHtml(selKey)}
+    </div>`;
+}
+
+function renderAffirm(){
+  const a = affirmationFor(todayKey(), affirmOffset);
+  return `
+    <h1 class="page-title">Affirmations</h1>
+    ${a ? `<div class="affirm"><q>${esc(a[0])}</q><span class="by">${esc(a[1] || "Your words")}</span><button class="shuffle" data-act="shuffle" aria-label="Show another affirmation">${ICON.shuffle}</button></div>` : ""}
+    <div class="section">
+      <h2>Your affirmations</h2>
+      <p class="hint">Write the words you want to hear. They’ll greet you when you open Haven.</p>
+      ${state.affirmations.length ? `<ul class="list">${state.affirmations.map(x => `<li><span>${esc(x.text)}<small class="aff-by">${esc(authorOf(x))}</small></span><button class="icon-btn" data-act="delaff" data-id="${x.id}" aria-label="Delete affirmation">${ICON.trash}</button></li>`).join("")}</ul>` : ""}
+      <input class="field" id="affInput" maxlength="200" placeholder="I am allowed to rest." aria-label="New affirmation" style="margin-top:12px">
+      <div class="add-row"><input class="field" id="affBy" maxlength="40" placeholder="${esc(state.settings.name ? "From " + state.settings.name : "From (optional)")}" aria-label="Who it’s from"><button class="btn" data-act="addaff">Add</button></div>
+      <p class="form-note">Leave “From” empty to sign it with your name, or write who it’s from.</p>
+    </div>
+    <div class="section">
+      <h2>What to show</h2>
+      <p class="hint">Turn off inspiration quotes to see only your own words.</p>
+      ${switchRow("quotes", "Inspiration quotes", "A rotating library of quotes, a new one each day")}
+      ${switchRow("mine", "My affirmations", state.affirmations.length ? state.affirmations.length + " written" : "None written yet")}
+    </div>`;
+}
+
+function switchRow(key, label, sub){
+  const on = !!state.settings[key];
+  return `<div class="switch-row"><div>${esc(label)}${sub ? `<small>${esc(sub)}</small>` : ""}</div>
+    <button class="switch" role="switch" aria-checked="${on}" aria-label="${esc(label)}" data-act="switch" data-key="${key}"></button></div>`;
+}
+
+function accountSectionHtml(){
+  const sync = window.HavenSync;
+  if (!sync || !sync.configured) return `<div class="section"><h2>Sync</h2><p class="hint">Sync isn’t set up yet, so everything stays on this device. Add your Firebase settings to firebase-config.js to sync across devices.</p></div>`;
+  const u = sync.user;
+  if (u) return `<div class="section"><h2>Sync</h2><p class="hint">Signed in as ${esc(u.email)}. Your checklists sync to your iPhone, iPad and Mac.</p><button class="btn ghost" data-act="signout">Sign out</button></div>`;
+  return `<div class="section"><h2>Sync</h2><p class="hint">Sign in to keep Haven the same on all your devices.</p><button class="btn" data-act="signin">Sign in or create account</button></div>`;
+}
+function openAuthSheet(){
+  openSheet(`
+    <div class="sheet-head"><h2>Sign in</h2><button class="icon-btn" data-x aria-label="Close">${ICON.close}</button></div>
+    <p style="margin:0;color:var(--muted)">Use the same email and password on every device.</p>
+    <label class="flabel" for="aEmail">Email</label>
+    <input class="field" id="aEmail" type="email" autocomplete="email" inputmode="email" autocapitalize="off">
+    <label class="flabel" for="aPass">Password</label>
+    <input class="field" id="aPass" type="password" autocomplete="current-password" minlength="6">
+    <p class="form-error hidden" id="aErr"></p>
+    <p class="form-note hidden" id="aNote"></p>
+    <div class="sheet-actions"><button class="btn ghost" id="aNew" type="button">Create account</button><button class="btn" id="aIn" type="button">Sign in</button></div>
+    <p style="text-align:center;margin:16px 0 0"><button id="aForgot" type="button" style="text-decoration:underline;text-underline-offset:3px;color:var(--muted);font-size:15px">Forgot password</button></p>`,
+    root => {
+      const err = $("#aErr", root), note = $("#aNote", root);
+      const show = (el, m) => { err.classList.add("hidden"); note.classList.add("hidden"); el.textContent = m; el.classList.remove("hidden"); };
+      const vals = () => [$("#aEmail", root).value.trim(), $("#aPass", root).value];
+      const run = async (fn, okMsg) => {
+        const [email, pass] = vals();
+        if (!email) return show(err, "Enter your email.");
+        try { await fn(email, pass); if (okMsg) show(note, okMsg); else { closeSheet(); render(); } }
+        catch(e){ show(err, window.HavenSync.explain(e)); }
+      };
+      $("[data-x]", root).onclick = closeSheet;
+      $("#aIn", root).onclick = () => run((e,p) => window.HavenSync.signIn(e,p));
+      $("#aNew", root).onclick = () => {
+        if (vals()[1].length < 6) return show(err, "Use a password with at least 6 characters.");
+        run((e,p) => window.HavenSync.signUp(e,p));
+      };
+      $("#aForgot", root).onclick = () => run(e => window.HavenSync.reset(e), "Check your email for a link to reset your password.");
+    });
+}
+
+function renderSettings(){
+  const s = state.settings;
+  return `
+    <h1 class="page-title">Settings</h1>
+    <div class="section">
+      <h2>Your name</h2>
+      <p class="hint">Used in greetings and to sign your affirmations.</p>
+      <input class="field" id="nameInput" maxlength="30" placeholder="Your name" value="${esc(state.settings.name)}" autocomplete="given-name">
+    </div>
+    ${accountSectionHtml()}
+    <div class="section">
+      <h2>Theme</h2>
+      <p class="hint">Mono is the default. Pastels soften the whole app.</p>
+      <div class="swatches">${PALETTES.map(p => `<button class="swatch" data-act="palette" data-id="${p.id}" aria-pressed="${s.palette===p.id}"><div class="chips">${p.chips.map(c => `<i style="background:${c}"></i>`).join("")}</div>${p.name}</button>`).join("")}</div>
+    </div>
+    <div class="section">
+      <h2>Appearance</h2>
+      <div class="seg">${[["auto","Device"],["light","Light"],["dark","Dark"]].map(([v,l]) => `<button data-act="appearance" data-v="${v}" aria-pressed="${s.appearance===v}">${l}</button>`).join("")}</div>
+    </div>
+    <div class="section">
+      <h2>Affirmations</h2>
+      ${switchRow("splash", "Greet me when I open Haven", "Shows today’s affirmation full screen")}
+      ${switchRow("quotes", "Inspiration quotes", "")}
+      ${switchRow("mine", "My affirmations", "")}
+    </div>
+    <div class="section">
+      <h2>Reminders</h2>
+      <p class="hint">Reminders show as banners inside Haven while it’s open. Phone notifications come with the native app later. Set them per checklist when you create or edit one.</p>
+    </div>
+    <div class="section">
+      <h2>Start over</h2>
+      <p class="hint">Removes every checklist, group, affirmation and checkmark.</p>
+      <button class="btn danger" data-act="reset">Erase all data</button>
+    </div>`;
+}
+
+function render(){
+  const app = $("#app");
+  app.innerHTML = tab === "today" ? renderToday() : tab === "calendar" ? renderCalendar() : tab === "affirm" ? renderAffirm() : renderSettings();
+  checkReminders();
+}
+
+/* ================= Sheets ================= */
+function closeSheet(){ $("#sheetHost").innerHTML = ""; }
+function openSheet(html, onMount){
+  $("#sheetHost").innerHTML = `<div class="scrim" id="scrim"><div class="sheet" role="dialog" aria-modal="true">${html}</div></div>`;
+  $("#scrim").addEventListener("click", e => { if (e.target.id === "scrim") closeSheet(); });
+  onMount && onMount($("#scrim .sheet"));
+  const f = $("#scrim input"); if (f) setTimeout(() => f.focus(), 60);
+}
+
+function askConfirm(title, message, okLabel, onOk){
+  openSheet(`
+    <div class="sheet-head"><h2>${esc(title)}</h2><button class="icon-btn" data-x aria-label="Close">${ICON.close}</button></div>
+    <p style="margin:0;color:var(--muted)">${esc(message)}</p>
+    <div class="sheet-actions"><button class="btn ghost" data-x type="button">Cancel</button><button class="btn danger" id="cOk" type="button">${esc(okLabel)}</button></div>`,
+    root => {
+      root.querySelectorAll("[data-x]").forEach(b => b.onclick = closeSheet);
+      $("#cOk", root).onclick = () => { closeSheet(); onOk(); };
+    });
+}
+
+function openItemSheet(item, dateKey){
+  const editing = !!item;
+  const it = item ? JSON.parse(JSON.stringify(item)) : {
+    id:uid(), title:"", groupId: state.groups[0]?.id || "", steps:[],
+    repeat:{type:"once", date: dateKey || todayKey(), days:[], start: dateKey || todayKey()},
+    time:"", until:"", reminder:{type:"off", mins:30}
+  };
+  if (!it.repeat.days) it.repeat.days = [];
+  if (!it.repeat.date) it.repeat.date = dateKey || todayKey();
+
+  const html = `
+    <div class="sheet-head"><h2>${editing ? "Edit checklist" : "New checklist"}</h2><button class="icon-btn" data-x aria-label="Close">${ICON.close}</button></div>
+    <label class="flabel" for="fTitle">Name</label>
+    <input class="field" id="fTitle" maxlength="80" placeholder="Evening skincare" value="${esc(it.title)}">
+    <label class="flabel">Steps <span style="font-size:13px">(optional, for routines)</span></label>
+    <div id="fSteps"></div>
+    <button class="chip" id="fAddStep" type="button">+ Add step</button>
+    <label class="flabel" for="fGroup">Group</label>
+    <select class="field" id="fGroup">
+      <option value="">No group</option>
+      ${state.groups.map(g => `<option value="${g.id}" ${g.id===it.groupId ? 'selected' : ''}>${esc(g.name)}</option>`).join("")}
+    </select>
+    <label class="flabel">Repeat</label>
+    <div class="chips-row" id="fRepeat">
+      ${[["once","Just once"],["daily","Every day"],["days","Certain days"]].map(([v,l]) => `<button type="button" class="chip" data-v="${v}" aria-pressed="${it.repeat.type===v}">${l}</button>`).join("")}
+    </div>
+    <div id="fOnce" style="margin-top:10px"><input type="date" class="field" id="fDate" value="${it.repeat.date}" aria-label="Date"></div>
+    <div id="fDays" class="chips-row" style="margin-top:10px">${WD.map((d,i) => `<button type="button" class="chip" data-d="${i}" aria-pressed="${it.repeat.days.includes(i)}">${d}</button>`).join("")}</div>
+    <div class="two">
+      <div><label class="flabel" for="fTime">Time</label><input type="time" class="field" id="fTime" value="${it.time}"></div>
+      <div><label class="flabel" for="fUntil">Ends at</label><input type="time" class="field" id="fUntil" value="${it.until}"></div>
+    </div>
+    <p class="form-note">“Ends at” closes a routine’s window, like a morning routine that ends at 10 am.</p>
+    <label class="flabel" for="fRem">Reminder</label>
+    <div class="two">
+      <select class="field" id="fRem">
+        <option value="off">Off</option>
+        <option value="at">At its time</option>
+        <option value="before">Before it’s due</option>
+        <option value="closing">Before it closes</option>
+      </select>
+      <select class="field" id="fMins" aria-label="How long before">
+        ${[5,10,15,30,60,120,1440].map(m => `<option value="${m}" ${it.reminder.mins==m ? 'selected' : ''}>${fmtMins(m)} before</option>`).join("")}
+      </select>
+    </div>
+    <p class="form-error hidden" id="fErr"></p>
+    <div class="sheet-actions">
+      ${editing ? `<button class="btn danger" id="fDel" type="button">Delete</button>` : ""}
+      <button class="btn" id="fSave" type="button">${editing ? "Save changes" : "Add checklist"}</button>
+    </div>`;
+
+  openSheet(html, root => {
+    const stepsBox = $("#fSteps", root);
+    const drawSteps = () => {
+      stepsBox.innerHTML = it.steps.map((s,i) => `<div class="step-edit"><input class="field" data-i="${i}" maxlength="80" value="${esc(s.text)}" placeholder="Step ${i+1}" aria-label="Step ${i+1}"><button type="button" class="icon-btn" data-rm="${i}" aria-label="Remove step">${ICON.close}</button></div>`).join("");
+    };
+    drawSteps();
+    stepsBox.addEventListener("input", e => { const i = e.target.dataset.i; if (i != null) it.steps[i].text = e.target.value; });
+    stepsBox.addEventListener("click", e => { const b = e.target.closest("[data-rm]"); if (b){ it.steps.splice(+b.dataset.rm, 1); drawSteps(); } });
+    $("#fAddStep", root).onclick = () => { it.steps.push({id:uid(), text:""}); drawSteps(); const ins = stepsBox.querySelectorAll("input"); ins[ins.length-1].focus(); };
+
+    const syncRepeat = () => {
+      root.querySelectorAll("#fRepeat .chip").forEach(c => c.setAttribute("aria-pressed", c.dataset.v === it.repeat.type));
+      $("#fOnce", root).classList.toggle("hidden", it.repeat.type !== "once");
+      $("#fDays", root).classList.toggle("hidden", it.repeat.type !== "days");
+    };
+    syncRepeat();
+    $("#fRepeat", root).onclick = e => { const c = e.target.closest(".chip"); if (c){ it.repeat.type = c.dataset.v; syncRepeat(); } };
+    $("#fDays", root).onclick = e => {
+      const c = e.target.closest(".chip"); if (!c) return;
+      const d = +c.dataset.d;
+      it.repeat.days = it.repeat.days.includes(d) ? it.repeat.days.filter(x => x !== d) : it.repeat.days.concat(d);
+      c.setAttribute("aria-pressed", it.repeat.days.includes(d));
+    };
+    const rem = $("#fRem", root), mins = $("#fMins", root);
+    rem.value = it.reminder.type;
+    const syncRem = () => { mins.classList.toggle("hidden", rem.value === "off" || rem.value === "at"); };
+    syncRem(); rem.onchange = syncRem;
+
+    $("[data-x]", root).onclick = closeSheet;
+    if (editing) $("#fDel", root).onclick = () => {
+      askConfirm("Delete checklist?", "“" + it.title + "” and its checkmarks will be removed.", "Delete", () => {
+        state.items = state.items.filter(x => x.id !== it.id);
+        save(); render();
+      });
+    };
+    $("#fSave", root).onclick = () => {
+      const err = $("#fErr", root);
+      const show = m => { err.textContent = m; err.classList.remove("hidden"); };
+      it.title = $("#fTitle", root).value.trim();
+      it.groupId = $("#fGroup", root).value;
+      it.time = $("#fTime", root).value;
+      it.until = $("#fUntil", root).value;
+      it.repeat.date = $("#fDate", root).value || todayKey();
+      it.reminder = { type: rem.value, mins: +mins.value };
+      it.steps = it.steps.filter(s => s.text.trim()).map(s => ({id:s.id, text:s.text.trim()}));
+      if (!it.title) return show("Give the checklist a name.");
+      if (it.repeat.type === "days" && !it.repeat.days.length) return show("Pick at least one day.");
+      if ((it.reminder.type === "at" || it.reminder.type === "before") && !it.time) return show("Set a time so the reminder knows when to appear.");
+      if (it.reminder.type === "closing" && !it.until) return show("Set an “Ends at” time so the reminder knows when the routine closes.");
+      if (it.repeat.type !== "once" && !it.repeat.start) it.repeat.start = todayKey();
+      if (editing){ const i = state.items.findIndex(x => x.id === it.id); state.items[i] = it; }
+      else state.items.push(it);
+      save(); closeSheet(); render();
+    };
+  });
+}
+
+function openGroupSheet(group){
+  const editing = !!group;
+  const html = `
+    <div class="sheet-head"><h2>${editing ? "Edit group" : "New group"}</h2><button class="icon-btn" data-x aria-label="Close">${ICON.close}</button></div>
+    <label class="flabel" for="gName">Name</label>
+    <input class="field" id="gName" maxlength="40" placeholder="Skincare, Fitness, Study…" value="${esc(group?.name || "")}">
+    ${editing ? `<p class="form-note">Deleting a group keeps its checklists. They move to “Everything else”.</p>` : ""}
+    <p class="form-error hidden" id="gErr"></p>
+    <div class="sheet-actions">
+      ${editing ? `<button class="btn danger" id="gDel" type="button">Delete group</button>` : ""}
+      <button class="btn" id="gSave" type="button">${editing ? "Save changes" : "Create group"}</button>
+    </div>`;
+  openSheet(html, root => {
+    $("[data-x]", root).onclick = closeSheet;
+    const submit = () => {
+      const name = $("#gName", root).value.trim();
+      if (!name){ const e = $("#gErr", root); e.textContent = "Give the group a name."; e.classList.remove("hidden"); return; }
+      if (editing) group.name = name; else state.groups.push({id:uid(), name, collapsed:false});
+      save(); closeSheet(); render();
+    };
+    $("#gSave", root).onclick = submit;
+    $("#gName", root).addEventListener("keydown", e => { if (e.key === "Enter") submit(); });
+    if (editing) $("#gDel", root).onclick = () => askConfirm("Delete group?", "“" + group.name + "” will be removed. Its checklists stay, under “Everything else”.", "Delete group", () => {
+      state.groups = state.groups.filter(g => g.id !== group.id);
+      state.items.forEach(i => { if (i.groupId === group.id) i.groupId = ""; });
+      save(); render();
+    });
+  });
+}
+
+/* ================= Reminders (in-app banners) ================= */
+function activeReminders(){
+  const key = todayKey();
+  const now = new Date(); const nm = now.getHours()*60 + now.getMinutes();
+  const out = [];
+  itemsOn(key).forEach(it => {
+    const r = it.reminder; if (!r || r.type === "off" || isComplete(key, it)) return;
+    const t = toMin(it.time), u = toMin(it.until);
+    let from, to, text;
+    if (r.type === "at" && t != null){ from = t; to = t + 60; text = `It’s time for <b>${esc(it.title)}</b>.`; }
+    else if (r.type === "before" && t != null){ from = t - r.mins; to = t; text = `<b>${esc(it.title)}</b> is due at ${fmtTime(it.time)}, in ${fmtMins(Math.max(t - nm, 1))}.`; }
+    else if (r.type === "closing" && u != null){ from = u - r.mins; to = u; text = `<b>${esc(it.title)}</b> closes at ${fmtTime(it.until)} and isn’t finished yet.`; }
+    else return;
+    const dk = key + "|" + it.id + "|" + r.type;
+    if (nm >= from && nm < to && !state.dismissed[dk]) out.push({dk, text, id:it.id});
+  });
+  return out;
+}
+function checkReminders(){
+  const box = $("#banners");
+  const list = activeReminders();
+  const sig = list.map(x => x.dk + x.text).join();
+  if (box.dataset.sig === sig) return;
+  box.dataset.sig = sig;
+  box.innerHTML = list.map(x => `<div class="banner" role="status"><p>${x.text}</p>
+    <button class="chip" data-bact="open" data-id="${x.id}">Open</button>
+    <button class="icon-btn" data-bact="dismiss" data-dk="${x.dk}" aria-label="Dismiss reminder">${ICON.close}</button></div>`).join("");
+}
+$("#banners").addEventListener("click", e => {
+  const b = e.target.closest("[data-bact]"); if (!b) return;
+  if (b.dataset.bact === "dismiss"){
+    state.dismissed[b.dataset.dk] = true;
+    const tk = todayKey();
+    Object.keys(state.dismissed).forEach(k => { if (k.split("|")[0] < tk) delete state.dismissed[k]; });
+    save(); checkReminders();
+  } else {
+    openItems.add(b.dataset.id);
+    if (tab !== "today") setTab("today"); else render();
+    const k = b.parentElement.querySelector("[data-bact='dismiss']").dataset.dk;
+    state.dismissed[k] = true; save(); checkReminders();
+  }
+});
+setInterval(() => { if (!document.hidden) { checkReminders(); } }, 20000);
+
+/* ================= Events ================= */
+$("#app").addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  const act = b.dataset.act;
+  const key = tab === "calendar" ? selKey : todayKey();
+  const item = b.dataset.id ? state.items.find(i => i.id === b.dataset.id) : null;
+  switch (act){
+    case "toggle": if (item) toggleItem(key, item); break;
+    case "step": if (item) toggleStep(key, item, b.dataset.step); break;
+    case "expand": openItems.has(item.id) ? openItems.delete(item.id) : openItems.add(item.id); render(); break;
+    case "edit": openItemSheet(item); break;
+    case "new": openItemSheet(null, b.dataset.date); break;
+    case "newgroup": openGroupSheet(null); break;
+    case "editgroup": openGroupSheet(state.groups.find(g => g.id === b.dataset.gid)); break;
+    case "collapse": { const g = state.groups.find(g => g.id === b.dataset.gid); g.collapsed = !g.collapsed; save(); render(); break; }
+    case "shuffle": affirmOffset++; render(); break;
+    case "goaffirm": setTab("affirm"); break;
+    case "pick": selKey = b.dataset.date; { const d = parseKey(selKey); if (d.getMonth() !== calMonth.getMonth()) calMonth = new Date(d.getFullYear(), d.getMonth(), 1); } render(); break;
+    case "prevm": calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth()-1, 1); render(); break;
+    case "nextm": calMonth = new Date(calMonth.getFullYear(), calMonth.getMonth()+1, 1); render(); break;
+    case "addaff": addAffirmation(); break;
+    case "delaff": state.affirmations = state.affirmations.filter(a => a.id !== b.dataset.id); affirmOffset = 0; save(); render(); break;
+    case "switch": state.settings[b.dataset.key] = !state.settings[b.dataset.key]; affirmOffset = 0; save(); render(); break;
+    case "palette": state.settings.palette = b.dataset.id; applyTheme(); save(); render(); break;
+    case "appearance": state.settings.appearance = b.dataset.v; applyTheme(); save(); render(); break;
+    case "signin": openAuthSheet(); break;
+    case "signout": askConfirm("Sign out?", "Haven keeps a copy on this device. Sign in again to sync.", "Sign out", async () => { await window.HavenSync.signOut(); render(); }); break;
+    case "reset":
+      askConfirm("Erase all data?", "Every checklist, group, affirmation and checkmark will be removed. This can’t be undone.", "Erase everything", () => {
+        state = defaultState(); state.items = []; state.groups = []; save(); applyTheme(); render();
+      });
+      break;
+  }
+});
+$("#app").addEventListener("keydown", e => { if ((e.target.id === "affInput" || e.target.id === "affBy") && e.key === "Enter") addAffirmation(); });
+$("#app").addEventListener("change", e => {
+  if (e.target.id === "nameInput"){ state.settings.name = e.target.value.trim().slice(0,30); state.settings.askedName = true; save(); }
+});
+function addAffirmation(){
+  const inp = $("#affInput"); const v = inp.value.trim(); if (!v) return;
+  const by = ($("#affBy")?.value || "").trim();
+  state.affirmations.push({id:uid(), text:v, by}); save(); render();
+  setTimeout(() => $("#affInput")?.focus(), 0);
+}
+document.querySelectorAll("nav.tabs button").forEach(b => b.addEventListener("click", () => setTab(b.dataset.tab)));
+$("#fab").addEventListener("click", () => openItemSheet(null, tab === "calendar" ? selKey : todayKey()));
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeSheet(); });
+
+/* ================= Splash ================= */
+function showSplash(){
+  if (!state.settings.splash) return;
+  const a = affirmationFor(todayKey());
+  if (!a) return;
+  $("#splashHello").textContent = greeting() + ".";
+  $("#splashText").textContent = "“" + a[0] + "”";
+  $("#splashBy").textContent = a[1] || "Your words";
+  const s = $("#splash"); s.classList.remove("hidden");
+  const go = () => { s.classList.add("gone"); setTimeout(() => s.classList.add("hidden"), 750); };
+  $("#splashGo").onclick = go;
+  s.addEventListener("click", e => { if (e.target === s || e.target.closest(".inner")) go(); });
+}
+
+function openNameSheet(then){
+  openSheet(`
+    <div class="sheet-head"><h2>Welcome to Haven</h2></div>
+    <p style="margin:0;color:var(--muted)">What should Haven call you? You can change it later in Settings.</p>
+    <input class="field" id="onbName" maxlength="30" placeholder="Your name" autocomplete="given-name" style="margin-top:14px">
+    <div class="sheet-actions"><button class="btn ghost" id="onbSkip" type="button">Skip</button><button class="btn" id="onbSave" type="button">Continue</button></div>`,
+    root => {
+      const done = save_ => { state.settings.askedName = true; if (save_) state.settings.name = $("#onbName", root).value.trim().slice(0,30); save(); closeSheet(); render(); then && then(); };
+      $("#onbSave", root).onclick = () => done(true);
+      $("#onbSkip", root).onclick = () => done(false);
+      $("#onbName", root).addEventListener("keydown", e => { if (e.key === "Enter") done(true); });
+    });
+}
+
+/* ================= Boot ================= */
+applyTheme();
+setTab("today");
+if (!state.settings.name && !state.settings.askedName) openNameSheet(showSplash); else showSplash();
+if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+})();
+</script>
+<script type="module" src="firebase-sync.js"></script>
+</body>
+</html>
