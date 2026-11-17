@@ -5,7 +5,7 @@ export const firebaseConfig = {
   apiKey: "AIzaSyDFFRbCwIO2Kyv08o1SLRqUyjICEAnicWc",
   authDomain: "haven-4c67d.firebaseapp.com",
   projectId: "haven-4c67d",
-  storageBucket: "haven-4c67d.firebasestorage.app"",
+  storageBucket: "haven-4c67d.firebasestorage.app",
   messagingSenderId: "159212168513",
   appId: "1:159212168513:web:b8a772dacd5a92cc3cedc0"
 };
