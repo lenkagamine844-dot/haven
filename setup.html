@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haven notification keys</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<style>
+:root{ --bg:#F6F6F5; --surface:#fff; --ink:#1C1C1C; --muted:#7A7A77; --line:#E3E3E0; color-scheme:light; }
+@media (prefers-color-scheme: dark){ :root{ --bg:#131313; --surface:#1C1C1C; --ink:#ECECEA; --muted:#8E8E8B; --line:#2D2D2C; color-scheme:dark; } }
+*{ box-sizing:border-box; }
+body{ margin:0; background:var(--bg); color:var(--ink); font:17px/1.55 Georgia, "Times New Roman", serif; }
+main{ max-width:640px; margin:0 auto; padding:40px 16px 60px; }
+h1{ font-weight:400; font-size:34px; margin:0 0 8px; }
+p{ margin:0 0 14px; }
+.muted{ color:var(--muted); }
+.card{ background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:18px; margin:18px 0; }
+.card h2{ font-size:19px; font-style:italic; font-weight:500; margin:0 0 4px; }
+textarea{ width:100%; border:1px solid var(--line); border-radius:12px; padding:10px 12px; font:14px/1.4 ui-monospace, Menlo, Consolas, monospace; background:var(--bg); color:var(--ink); resize:none; }
+button{ font:inherit; border:0; border-radius:12px; padding:10px 18px; background:var(--ink); color:var(--bg); cursor:pointer; }
+button.ghost{ background:transparent; color:var(--ink); border:1px solid var(--line); }
+.row{ display:flex; gap:8px; margin-top:10px; align-items:center; flex-wrap:wrap; }
+.hidden{ display:none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Notification keys</h1>
+  <p class="muted">This page makes the pair of keys Haven’s notifications need. The keys are made here in your browser and never sent anywhere.</p>
+  <p class="muted">Make them <b>once</b>. If you make new ones later, every device has to turn notifications on again.</p>
+  <button id="make">Make my keys</button>
+
+  <div id="out" class="hidden">
+    <div class="card">
+      <h2>Public key</h2>
+      <p class="muted">Goes into <b>push-config.js</b> on GitHub. It’s fine for people to see this one.</p>
+      <textarea id="pub" rows="3" readonly></textarea>
+      <div class="row"><button data-copy="pub">Copy public key</button><span class="muted" id="pubDone"></span></div>
+    </div>
+    <div class="card">
+      <h2>Private key</h2>
+      <p class="muted">Goes only into <b>Cloudflare</b> as the secret <b>VAPID_KEY</b>. Don’t put it on GitHub or share it.</p>
+      <textarea id="priv" rows="4" readonly></textarea>
+      <div class="row"><button data-copy="priv">Copy private key</button><span class="muted" id="privDone"></span></div>
+    </div>
+    <p class="muted">Paste both somewhere safe (like Notepad) before closing this page. Closing it forgets them.</p>
+  </div>
+</main>
+<script>
+const b64url = (bytes) => btoa(String.fromCharCode(...new Uint8Array(bytes))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+document.getElementById("make").onclick = async () => {
+  const k = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, true, ["sign", "verify"]);
+  const jwk = await crypto.subtle.exportKey("jwk", k.privateKey);
+  document.getElementById("pub").value = b64url(await crypto.subtle.exportKey("raw", k.publicKey));
+  document.getElementById("priv").value = JSON.stringify({ kty: "EC", crv: "P-256", d: jwk.d, x: jwk.x, y: jwk.y });
+  document.getElementById("out").classList.remove("hidden");
+  document.getElementById("make").textContent = "Make different keys";
+};
+document.querySelectorAll("[data-copy]").forEach((b) => b.onclick = async () => {
+  const id = b.dataset.copy, ta = document.getElementById(id);
+  try { await navigator.clipboard.writeText(ta.value); } catch (e) { ta.select(); document.execCommand("copy"); }
+  document.getElementById(id + "Done").textContent = "Copied";
+});
+</script>
+</body>
+</html>

@@ -403,8 +403,36 @@ window.HavenBridge = {
     try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e){}
     applyTheme(); render();
   },
-  refresh(){ if (tab === "settings") render(); }
+  refresh(){ if (tab === "settings") render(); },
+  schedule: () => buildSchedule()
 };
+
+// Upcoming reminders for the next 14 days, as exact times. The Cloudflare notifier sends these.
+function buildSchedule(){
+  const out = [];
+  const now = Date.now();
+  const start = new Date(); start.setHours(0,0,0,0);
+  for (let day = -1; day < 15; day++){
+    const d = new Date(start); d.setDate(start.getDate() + day);
+    const key = keyOf(d);
+    for (const it of itemsOn(key)){
+      const r = it.reminder;
+      if (!r || r.type === "off" || isComplete(key, it)) continue;
+      if (state.dismissed[key + "|" + it.id + "|" + r.type]) continue;
+      const t = toMin(it.time), u = toMin(it.until);
+      let at, title, body;
+      if (r.type === "at" && t != null){ at = t; title = "Time for " + it.title; body = fmtTime(it.time) + (it.steps.length ? " · " + it.steps.length + " steps" : ""); }
+      else if (r.type === "before" && t != null){ at = t - r.mins; title = it.title + " in " + fmtMins(r.mins); body = "Due at " + fmtTime(it.time) + "."; }
+      else if (r.type === "closing" && u != null){ at = u - r.mins; title = it.title + " closes at " + fmtTime(it.until); body = "You haven’t finished it yet."; }
+      else continue;
+      const when = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, at).getTime();
+      if (when < now - 10*60000) continue;
+      out.push({ k: key + "|" + it.id + "|" + r.type, at: when, t: title, b: body });
+    }
+  }
+  out.sort((a,b) => a.at - b.at);
+  return out.slice(0, 400);
+}
 
 /* ================= Domain ================= */
 function occursOn(item, key){
@@ -705,6 +733,27 @@ function openAuthSheet(){
     });
 }
 
+function notifySectionHtml(){
+  const sync = window.HavenSync;
+  const st = sync && sync.pushState ? sync.pushState() : "unavailable";
+  const head = `<div class="section"><h2>Notifications</h2>`;
+  const tail = `<p class="hint" style="margin-top:12px">Choose which checklists remind you when you create or edit one. While Haven is open, reminders also show as banners.</p></div>`;
+  const msg = {
+    unavailable: "Notifications need sync to be set up first.",
+    "not-configured": "Notifications aren’t set up yet. See the setup guide (push-config.js).",
+    "signed-out": "Sign in under Sync first. Notifications use your account to know what to remind you about.",
+    "open-from-home": "On iPhone and iPad, open Haven from its Home Screen icon (not Safari) to turn on notifications.",
+    unsupported: "This browser can’t show notifications. On iPhone and iPad you need iOS 16.4 or newer.",
+    denied: "Notifications are blocked for Haven. Turn them on in your device’s Settings → Notifications → Haven, then come back.",
+    busy: "Working on it…"
+  }[st];
+  if (msg) return head + `<p class="hint">${esc(msg)}</p>` + tail;
+  if (st === "on") return head + `<p class="hint">On for this device. Reminders arrive even when Haven is closed.</p>
+    <div class="add-row"><button class="btn" data-act="notiftest">Send a test</button><button class="btn ghost" data-act="notifoff">Turn off on this device</button></div>` + tail;
+  return head + `<p class="hint">Get reminders on your lock screen, even when Haven is closed. Turn this on once on each device.</p>
+    <button class="btn" data-act="notifon">Turn on notifications</button>` + tail;
+}
+
 function renderSettings(){
   const s = state.settings;
   return `
@@ -730,10 +779,7 @@ function renderSettings(){
       ${switchRow("quotes", "Inspiration quotes", "")}
       ${switchRow("mine", "My affirmations", "")}
     </div>
-    <div class="section">
-      <h2>Reminders</h2>
-      <p class="hint">Reminders show as banners inside Haven while it’s open. Phone notifications come with the native app later. Set them per checklist when you create or edit one.</p>
-    </div>
+    ${notifySectionHtml()}
     <div class="section">
       <h2>Start over</h2>
       <p class="hint">Removes every checklist, group, affirmation and checkmark.</p>
@@ -923,6 +969,14 @@ function activeReminders(){
   });
   return out;
 }
+function showToast(text){
+  const box = $("#banners");
+  const el = document.createElement("div");
+  el.className = "banner"; el.setAttribute("role","status");
+  el.innerHTML = `<p>${esc(text)}</p>`;
+  box.appendChild(el);
+  setTimeout(() => el.remove(), 5000);
+}
 function checkReminders(){
   const box = $("#banners");
   const list = activeReminders();
@@ -975,6 +1029,9 @@ $("#app").addEventListener("click", e => {
     case "palette": state.settings.palette = b.dataset.id; applyTheme(); save(); render(); break;
     case "appearance": state.settings.appearance = b.dataset.v; applyTheme(); save(); render(); break;
     case "signin": openAuthSheet(); break;
+    case "notifon": window.HavenSync.enablePush().then(render, e => { render(); showToast(window.HavenSync.explain(e)); }); render(); break;
+    case "notifoff": window.HavenSync.disablePush().then(render, e => { render(); showToast(window.HavenSync.explain(e)); }); break;
+    case "notiftest": window.HavenSync.testPush().then(() => showToast("Test sent. It should arrive within about a minute."), e => showToast(window.HavenSync.explain(e))); break;
     case "signout": askConfirm("Sign out?", "Haven keeps a copy on this device. Sign in again to sync.", "Sign out", async () => { await window.HavenSync.signOut(); render(); }); break;
     case "reset":
       askConfirm("Erase all data?", "Every checklist, group, affirmation and checkmark will be removed. This can’t be undone.", "Erase everything", () => {

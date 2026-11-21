@@ -1,7 +1,7 @@
 // Lets Haven open without internet. Bump VERSION when you change files so phones pick up the update.
-const VERSION = "haven-v1";
+const VERSION = "haven-v2";
 const SHELL = [
-  "./", "index.html", "manifest.webmanifest", "firebase-config.js", "firebase-sync.js",
+  "./", "index.html", "manifest.webmanifest", "firebase-config.js", "firebase-sync.js", "push-config.js",
   "icons/apple-touch-icon.png", "icons/icon-192.png", "icons/icon-512.png"
 ];
 
@@ -46,4 +46,28 @@ self.addEventListener("fetch", (e) => {
       }))
     );
   }
+});
+
+// Reminders sent by the Cloudflare notifier
+self.addEventListener("push", (e) => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (err) { d = { body: e.data ? e.data.text() : "" }; }
+  e.waitUntil(self.registration.showNotification(d.title || "Haven", {
+    body: d.body || "",
+    tag: d.tag || undefined,
+    icon: "icons/icon-192.png",
+    badge: "icons/icon-192.png",
+    data: { url: d.url || "./" }
+  }));
+});
+
+// Tapping a notification opens Haven (or brings it to the front)
+self.addEventListener("notificationclick", (e) => {
+  e.notification.close();
+  const target = new URL((e.notification.data && e.notification.data.url) || "./", self.location.href).href;
+  e.waitUntil((async () => {
+    const wins = await clients.matchAll({ type: "window", includeUncontrolled: true });
+    for (const w of wins) { if (w.url.startsWith(self.registration.scope) && "focus" in w) return w.focus(); }
+    return clients.openWindow(target);
+  })());
 });

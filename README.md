@@ -10,6 +10,9 @@ A gentle checklist, routine and affirmation app. It runs as a web app you add to
 | `firebase-config.js` | Your Firebase settings go here (step 2) |
 | `firebase-sync.js` | Sign-in and syncing |
 | `firestore.rules` | Keeps each person's data private (step 2) |
+| `push-config.js` | Notification public key goes here |
+| `setup.html` | Makes the notification keys |
+| `notifier/worker.js` | The Cloudflare Worker that sends notifications (not used by the website itself) |
 | `manifest.webmanifest`, `sw.js`, `icons/` | Make it install and open like an app, even offline |
 
 Haven works without step 2: it just saves on that one device. Do step 2 if she wants her iPhone, iPad and Mac to share the same checklists.
@@ -57,7 +60,7 @@ Her data isn't affected by updates.
 
 ## Good to know
 
-- **Reminders** show as banners while Haven is open. Real lock-screen notifications need the native SwiftUI app or a paid server, so that's for later.
+- **Notifications** come from a free Cloudflare Worker (`notifier/worker.js`) that checks every minute. Each device turns them on in Settings → Notifications. iPhone and iPad need iOS 16.4+ and Haven opened from the Home Screen icon. The Worker only knows reminders for the next 14 days, refreshed whenever Haven is opened.
 - **Offline:** Haven opens and works without internet. Changes sync the next time it's online.
 - **Two devices at once:** the most recent change wins. Editing the same day on two devices within a second or two of each other can drop one of the edits.
 - **Free limits:** the Firebase Spark plan allows far more reads and writes per day than one person will use.
